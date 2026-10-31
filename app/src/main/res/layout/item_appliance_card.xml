@@ -1,6 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp" />
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="@dimen/corner_card"
+    app:cardElevation="@dimen/elevation_card"
+    app:cardBackgroundColor="@color/surface"
+    app:rippleColor="@color/rose_primary_light"
+    android:checkable="false"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/card_padding">
+
+        <!-- Icon container -->
+        <FrameLayout
+            android:id="@+id/iconContainer"
+            android:layout_width="@dimen/icon_container_size"
+            android:layout_height="@dimen/icon_container_size"
+            android:background="@drawable/bg_icon_container_off">
+
+            <ImageView
+                android:id="@+id/ivIcon"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lightbulb"
+                android:tint="@color/text_secondary"
+                android:contentDescription="Appliance icon"
+                tools:ignore="UseAppTint" />
+
+        </FrameLayout>
+
+        <!-- Name + subtitle -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bedroom Light"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/tvSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Light · GPIO 5"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+
+        <!-- Toggle switch -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:useMaterialThemeColors="false"
+            app:thumbTint="@color/rose_switch_thumb"
+            app:trackTint="@color/rose_switch_track"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
