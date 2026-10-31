@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ============================================================
+         Motion + spacing constants.
+         Centralizing these means every screen shares the same rhythm.
+         ============================================================ -->
+
+    <!-- Durations (milliseconds) -->
+    <integer name="duration_short">150</integer>
+    <integer name="duration_medium">250</integer>
+    <integer name="duration_long">400</integer>
+
+    <!-- Corner radii -->
+    <dimen name="corner_card">16dp</dimen>
+    <dimen name="corner_button">12dp</dimen>
+    <dimen name="corner_chip">999dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_card">2dp</dimen>
+    <dimen name="elevation_fab">4dp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">16dp</dimen>
+    <dimen name="space_lg">24dp</dimen>
+    <dimen name="space_xl">32dp</dimen>
+
+    <!-- Component sizes -->
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="icon_container_size">44dp</dimen>
+    <dimen name="icon_size">24dp</dimen>
+
+    <!-- The Living Light pulse (used in Phase 3.9) -->
+    <dimen name="pulse_scale">1.08</dimen>
+
+</resources>

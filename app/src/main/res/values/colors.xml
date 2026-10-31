@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- ============================================================
+         Rose palette — light mode only for Phase 3.
+         Semantic tokens so dark mode is a future one-file change.
+         ============================================================ -->
+
+    <!-- Brand -->
+    <color name="rose_primary">#E91E63</color>
+    <color name="rose_primary_dark">#C2185B</color>
+    <color name="rose_primary_light">#F8BBD0</color>
+    <color name="rose_on_primary">#FFFFFF</color>
+
+    <!-- Containers (pale pink backgrounds for chips, highlights) -->
+    <color name="rose_container">#FCE4EC</color>
+    <color name="rose_on_container">#880E4F</color>
+
+    <!-- Secondary -->
+    <color name="rose_secondary">#AD1457</color>
+    <color name="rose_on_secondary">#FFFFFF</color>
+
+    <!-- Backgrounds -->
+    <color name="bg_blush">#FFF5F7</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#FCE4EC</color>
+
+    <!-- Text -->
+    <color name="text_primary">#2E1A22</color>
+    <color name="text_secondary">#7A5C68</color>
+
+    <!-- Appliance state -->
+    <color name="state_on">#E91E63</color>
+    <color name="state_off">#E0D5DA</color>
+    <color name="state_on_container">#FCE4EC</color>
+    <color name="state_off_container">#F5EFF1</color>
+
+    <!-- Feedback -->
+    <color name="error">#DC2626</color>
+    <color name="success">#43A047</color>
+
+    <!-- Outline / dividers -->
+    <color name="outline">#E8D7DE</color>
+
 </resources>
