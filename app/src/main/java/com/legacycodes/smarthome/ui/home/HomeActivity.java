@@ -98,6 +98,8 @@ public class HomeActivity extends AppCompatActivity {
         fabAdd.setOnClickListener(v -> {
             Toast.makeText(this, "Add screen coming in 3.11", Toast.LENGTH_SHORT).show();
         });
+
+
     }
 
     // ---- LiveData observers ----
