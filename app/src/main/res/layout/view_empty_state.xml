@@ -1,6 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/emptyStateRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center" />
+    android:gravity="center"
+    android:paddingHorizontal="32dp"
+    android:paddingBottom="96dp"
+    android:visibility="gone">
+
+    <!-- House illustration -->
+    <FrameLayout
+        android:layout_width="160dp"
+        android:layout_height="160dp">
+
+        <!-- Soft rose glow behind the house -->
+        <View
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_empty_glow"/>
+
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_home_outline"
+            android:tint="@color/rose_primary"
+            android:contentDescription="Empty home illustration"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Your home is quiet"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:letterSpacing="-0.01"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Add your first appliance to get started."
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddFirst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Add your first appliance"
+        android:textColor="@color/rose_on_primary"
+        app:backgroundTint="@color/rose_primary"
+        app:cornerRadius="@dimen/corner_button"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/rose_on_primary"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"/>
+
+</LinearLayout>
