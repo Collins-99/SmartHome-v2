@@ -1,5 +1,6 @@
 package com.legacycodes.smarthome.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -14,26 +15,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.legacycodes.smarthome.R;
 import com.legacycodes.smarthome.data.local.entity.ApplianceEntity;
 import com.legacycodes.smarthome.data.local.entity.DeviceEntity;
-import com.legacycodes.smarthome.data.local.entity.ProfileEntity;
+import com.legacycodes.smarthome.ui.addedit.AddEditActivity;
 
-import java.util.List;
-
-/**
- * Home screen. First visible screen of the app.
- *
- * Responsibilities:
- *   - Wire ViewModel → RecyclerView + header
- *   - Toggle visibility between recycler and empty state
- *   - Handle toggle clicks, FAB clicks, pull-to-refresh (3.10)
- *   - Observe offline state (3.10)
- *
- * This activity is intentionally thin — all data logic lives in HomeViewModel.
- */
 public class HomeActivity extends AppCompatActivity {
 
     private HomeViewModel viewModel;
@@ -41,6 +30,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private RecyclerView recycler;
     private View emptyState;
+    private View offlineBanner;
+    private SwipeRefreshLayout swipeRefresh;
     private ExtendedFloatingActionButton fabAdd;
     private TextView tvUserGreeting;
     private TextView tvHouseName;
@@ -58,21 +49,21 @@ public class HomeActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Bind views
-        recycler         = findViewById(R.id.recyclerAppliances);
-        emptyState       = findViewById(R.id.emptyState);
-        fabAdd           = findViewById(R.id.fabAdd);
-        tvUserGreeting   = findViewById(R.id.tvUserGreeting);
-        tvHouseName      = findViewById(R.id.tvHouseName);
-        tvDeviceStatus   = findViewById(R.id.tvDeviceStatus);
+        recycler        = findViewById(R.id.recyclerAppliances);
+        emptyState      = findViewById(R.id.emptyState);
+        offlineBanner   = findViewById(R.id.offlineBanner);
+        swipeRefresh    = findViewById(R.id.swipeRefresh);
+        fabAdd          = findViewById(R.id.fabAdd);
+        tvUserGreeting  = findViewById(R.id.tvUserGreeting);
+        tvHouseName     = findViewById(R.id.tvHouseName);
+        tvDeviceStatus  = findViewById(R.id.tvDeviceStatus);
 
-        // Recycler setup
         adapter = new ApplianceAdapter(new ApplianceAdapter.OnApplianceClickListener() {
             @Override
             public void onCardClick(ApplianceEntity appliance) {
-                // Placeholder for Phase 4: open edit screen
-                Toast.makeText(HomeActivity.this,
-                        "Tapped: " + appliance.name, Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(HomeActivity.this, AddEditActivity.class);
+                i.putExtra(AddEditActivity.EXTRA_APPLIANCE_ID, appliance.id);
+                startActivity(i);
             }
 
             @Override
@@ -86,23 +77,30 @@ public class HomeActivity extends AppCompatActivity {
         recycler.setItemAnimator(new DefaultItemAnimator());
         recycler.setHasFixedSize(true);
 
-        // ViewModel
+        swipeRefresh.setColorSchemeResources(R.color.rose_primary, R.color.rose_primary_dark);
+        swipeRefresh.setOnRefreshListener(() -> viewModel.refreshFromDevice());
+
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         observeProfile();
         observeDevice();
         observeAppliances();
         observeMessages();
+        observeConnection();
 
-        // FAB — placeholder; routed to AddEditActivity in 3.11
         fabAdd.setOnClickListener(v -> {
-            Toast.makeText(this, "Add screen coming in 3.11", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, AddEditActivity.class);
+            startActivity(i);
         });
 
-
+        View btnAddFirst = findViewById(R.id.btnAddFirst);
+        if (btnAddFirst != null) {
+            btnAddFirst.setOnClickListener(v -> {
+                Intent i = new Intent(this, AddEditActivity.class);
+                startActivity(i);
+            });
+        }
     }
-
-    // ---- LiveData observers ----
 
     private void observeProfile() {
         viewModel.getProfile().observe(this, profile -> {
@@ -122,7 +120,6 @@ public class HomeActivity extends AppCompatActivity {
         viewModel.getDevice().observe(this, device -> {
             updateDeviceStatus(device);
             if (device != null) {
-                // Trigger one-time /info fetch if pins not yet cached
                 viewModel.fetchDeviceInfoIfNeeded();
             }
         });
@@ -146,7 +143,16 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    // ---- Helpers ----
+    private void observeConnection() {
+        viewModel.getConnected().observe(this, connected -> {
+            boolean offline = connected == null || !connected;
+            offlineBanner.setVisibility(offline && viewModel.getDevice().getValue() != null
+                    ? View.VISIBLE : View.GONE);
+            if (swipeRefresh.isRefreshing() && connected != null && connected) {
+                swipeRefresh.setRefreshing(false);
+            }
+        });
+    }
 
     private void updateDeviceStatus(DeviceEntity device) {
         if (device == null) {
