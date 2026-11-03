@@ -62,7 +62,10 @@ public class AddEditActivity extends AppCompatActivity {
         etPin         = findViewById(R.id.etPin);
         btnSave       = findViewById(R.id.btnSave);
 
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+            overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right);
+        });
 
         viewModel = new ViewModelProvider(this).get(AddEditViewModel.class);
         long applianceId = getIntent().getLongExtra(EXTRA_APPLIANCE_ID, 0L);
@@ -160,6 +163,7 @@ public class AddEditActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK);
                 finish();
+                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right);
             }
 
             @Override

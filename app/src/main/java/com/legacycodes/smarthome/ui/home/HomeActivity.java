@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -19,9 +20,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.legacycodes.smarthome.R;
+import com.legacycodes.smarthome.SmartHomeApp;
 import com.legacycodes.smarthome.data.local.entity.ApplianceEntity;
 import com.legacycodes.smarthome.data.local.entity.DeviceEntity;
+import com.legacycodes.smarthome.data.repository.ApplianceRepository;
 import com.legacycodes.smarthome.ui.addedit.AddEditActivity;
+import com.legacycodes.smarthome.util.AppExecutors;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -64,11 +68,22 @@ public class HomeActivity extends AppCompatActivity {
                 Intent i = new Intent(HomeActivity.this, AddEditActivity.class);
                 i.putExtra(AddEditActivity.EXTRA_APPLIANCE_ID, appliance.id);
                 startActivity(i);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
             }
 
             @Override
             public void onToggleClick(ApplianceEntity appliance, boolean newCheckedState) {
                 viewModel.toggleAppliance(appliance, newCheckedState);
+            }
+
+            @Override
+            public void onCardLongClick(ApplianceEntity appliance) {
+                new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("Delete " + appliance.name + "?")
+                        .setMessage("This will remove it from your home. If it's currently on, the relay will be switched off first.")
+                        .setPositiveButton("Delete", (dialog, which) -> deleteAppliance(appliance))
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
         });
 
@@ -91,6 +106,7 @@ public class HomeActivity extends AppCompatActivity {
         fabAdd.setOnClickListener(v -> {
             Intent i = new Intent(this, AddEditActivity.class);
             startActivity(i);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
         });
 
         View btnAddFirst = findViewById(R.id.btnAddFirst);
@@ -98,6 +114,7 @@ public class HomeActivity extends AppCompatActivity {
             btnAddFirst.setOnClickListener(v -> {
                 Intent i = new Intent(this, AddEditActivity.class);
                 startActivity(i);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
             });
         }
     }
@@ -151,6 +168,30 @@ public class HomeActivity extends AppCompatActivity {
             if (swipeRefresh.isRefreshing() && connected != null && connected) {
                 swipeRefresh.setRefreshing(false);
             }
+        });
+    }
+
+    private void deleteAppliance(ApplianceEntity appliance) {
+        AppExecutors.get().diskIO().execute(() -> {
+            ((SmartHomeApp) getApplication()).getContainer()
+                    .applianceRepository.deleteAppliance(appliance.id,
+                            new ApplianceRepository.Callback<Void>() {
+                                @Override
+                                public void onSuccess(Void ignored) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(HomeActivity.this,
+                                                    "Deleted " + appliance.name,
+                                                    Toast.LENGTH_SHORT).show());
+                                }
+
+                                @Override
+                                public void onError(String reason) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(HomeActivity.this,
+                                                    "Delete failed: " + reason,
+                                                    Toast.LENGTH_SHORT).show());
+                                }
+                            });
         });
     }
 

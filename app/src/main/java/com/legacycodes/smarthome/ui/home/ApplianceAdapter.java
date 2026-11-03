@@ -23,24 +23,12 @@ import com.legacycodes.smarthome.R;
 import com.legacycodes.smarthome.data.local.entity.ApplianceEntity;
 import com.legacycodes.smarthome.domain.model.ApplianceType;
 
-/**
- * RecyclerView adapter for the appliance list.
- *
- * Phase 3.9 adds the "Living Light" pulse:
- *   - When a toggle flips on, the icon container scales 1.0 → 1.08 → 1.0
- *     with an overshoot interpolator, over 400ms. Feels like a small heartbeat.
- *   - The icon tint animates from text_secondary → rose_primary, so the color
- *     shifts smoothly instead of snapping.
- *   - The icon container background crossfades between the two oval drawables.
- *
- * The pulse only fires on real user taps (not on initial bind), which is why
- * we track the "previous state" per view holder.
- */
 public class ApplianceAdapter extends ListAdapter<ApplianceEntity, ApplianceAdapter.VH> {
 
     public interface OnApplianceClickListener {
         void onCardClick(ApplianceEntity appliance);
         void onToggleClick(ApplianceEntity appliance, boolean newCheckedState);
+        void onCardLongClick(ApplianceEntity appliance);
     }
 
     private final OnApplianceClickListener listener;
@@ -96,8 +84,6 @@ public class ApplianceAdapter extends ListAdapter<ApplianceEntity, ApplianceAdap
         final TextView tvSubtitle;
         final SwitchMaterial switchState;
 
-        // Track previous state per view holder so we only pulse on real transitions,
-        // not on initial bind or on notifyItemChanged without a state change.
         private int lastState = -1;
 
         VH(@NonNull View itemView) {
@@ -121,8 +107,6 @@ public class ApplianceAdapter extends ListAdapter<ApplianceEntity, ApplianceAdap
             int rosePrimary = ContextCompat.getColor(itemView.getContext(), R.color.rose_primary);
             int textSecondary = ContextCompat.getColor(itemView.getContext(), R.color.text_secondary);
 
-            // Tint animation: if state actually changed, animate the color transition.
-            // If this is initial bind (lastState == -1), snap to correct color instantly.
             if (lastState != -1 && lastState != item.state) {
                 animateIconTint(on ? textSecondary : rosePrimary,
                         on ? rosePrimary : textSecondary);
@@ -136,8 +120,6 @@ public class ApplianceAdapter extends ListAdapter<ApplianceEntity, ApplianceAdap
             iconContainer.setBackgroundResource(
                     on ? R.drawable.bg_icon_container_on : R.drawable.bg_icon_container_off);
 
-            // Switch: clear listener first, set checked, reattach — avoids
-            // programmatic setChecked firing onToggleClick
             switchState.setOnCheckedChangeListener(null);
             switchState.setChecked(on);
             switchState.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -152,10 +134,17 @@ public class ApplianceAdapter extends ListAdapter<ApplianceEntity, ApplianceAdap
                 }
             });
 
+            cardRoot.setOnLongClickListener(v -> {
+                if (listener != null) {
+                    listener.onCardLongClick(item);
+                    return true;
+                }
+                return false;
+            });
+
             lastState = item.state;
         }
 
-        /** Living Light pulse: scale 1.0 → 1.08 → 1.0 with overshoot easing. */
         private void pulseIcon() {
             iconContainer.animate().cancel();
             iconContainer.setScaleX(1f);
@@ -174,7 +163,6 @@ public class ApplianceAdapter extends ListAdapter<ApplianceEntity, ApplianceAdap
                     .start();
         }
 
-        /** Animate the ImageView tint between two colors over 300ms. */
         private void animateIconTint(int from, int to) {
             ValueAnimator anim = ValueAnimator.ofObject(new ArgbEvaluator(), from, to);
             anim.setDuration(300);
