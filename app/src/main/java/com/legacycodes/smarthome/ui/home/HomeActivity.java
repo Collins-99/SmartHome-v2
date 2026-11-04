@@ -3,6 +3,7 @@ package com.legacycodes.smarthome.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,8 @@ import com.legacycodes.smarthome.data.local.entity.ApplianceEntity;
 import com.legacycodes.smarthome.data.local.entity.DeviceEntity;
 import com.legacycodes.smarthome.data.repository.ApplianceRepository;
 import com.legacycodes.smarthome.ui.addedit.AddEditActivity;
+import com.legacycodes.smarthome.ui.profile.ProfileActivity;
+import com.legacycodes.smarthome.ui.setup.SetupActivity;
 import com.legacycodes.smarthome.util.AppExecutors;
 
 public class HomeActivity extends AppCompatActivity {
@@ -37,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
     private View offlineBanner;
     private SwipeRefreshLayout swipeRefresh;
     private ExtendedFloatingActionButton fabAdd;
+    private ImageButton btnSettings;
     private TextView tvUserGreeting;
     private TextView tvHouseName;
     private TextView tvDeviceStatus;
@@ -58,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
         offlineBanner   = findViewById(R.id.offlineBanner);
         swipeRefresh    = findViewById(R.id.swipeRefresh);
         fabAdd          = findViewById(R.id.fabAdd);
+        btnSettings     = findViewById(R.id.btnSettings);
         tvUserGreeting  = findViewById(R.id.tvUserGreeting);
         tvHouseName     = findViewById(R.id.tvHouseName);
         tvDeviceStatus  = findViewById(R.id.tvDeviceStatus);
@@ -117,6 +122,26 @@ public class HomeActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
             });
         }
+
+        btnSettings.setOnClickListener(v -> {
+            Intent i = new Intent(this, ProfileActivity.class);
+            startActivity(i);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
+        });
+
+        tvHouseName.setOnLongClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Reconfigure device?")
+                    .setMessage("This will let you change the ESP32's IP address. Your appliances will not be deleted.")
+                    .setPositiveButton("Reconfigure", (dialog, which) -> {
+                        Intent i = new Intent(this, SetupActivity.class);
+                        startActivity(i);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            return true;
+        });
     }
 
     private void observeProfile() {
